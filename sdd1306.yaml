@@ -1,0 +1,112 @@
+substitutions:
+  name: esphome-web-0dab08
+  friendly_name: Display Dev
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2024.6.0
+  name_add_mac_suffix: false
+  project:
+    name: esphome.web
+    version: dev
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+  
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+# Allow Over-The-Air updates
+ota:
+- platform: esphome
+
+# Allow provisioning Wi-Fi via serial
+improv_serial:
+
+wifi:
+  # Set up a wifi access point
+  ap: {}
+
+# In combination with the `ap` this allows the user
+# to provision wifi credentials to the device via WiFi AP.
+captive_portal:
+
+
+dashboard_import:
+  package_import_url: github://esphome/example-configs/esphome-web/esp32.yaml@main
+  import_full_config: true
+
+# Sets up Bluetooth LE (Only on ESP32) to allow the user
+# to provision wifi credentials to the device.
+esp32_improv:
+  authorizer: none
+
+# To have a "next url" for improv serial
+web_server:
+
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  frequency: 800kHz
+
+font:
+    # gfonts://family[@weight]
+  - file: "gfonts://Nanum+Gothic+Coding"
+    id: myfont
+    size: 16
+
+
+display:
+  - platform: ssd1306_i2c
+    id: disp
+    # show_test_card: true
+    model: "SSD1306 128x64"
+    address: 0x3C
+    lambda: |-
+      it.printf(0, 0, id(myfont), "%s", id(display_line1).state.c_str());
+      it.printf(0, 16, id(myfont), "%s", id(display_line2).state.c_str());
+      it.printf(0, 32, id(myfont), "%s", id(display_line3).state.c_str());
+      it.printf(0, 48, id(myfont), "%s", id(display_line4).state.c_str());
+    update_interval: 1s
+
+text:
+  - platform: template
+    id: display_line1
+    name: Display Line 1
+    optimistic: true
+    mode: TEXT
+    on_value:
+      then:
+        component.update: disp
+  - platform: template
+    id: display_line2
+    name: Display Line 2
+    optimistic: true
+    mode: TEXT
+    on_value:
+      then:
+        component.update: disp
+  - platform: template
+    id: display_line3
+    name: Display Line 3
+    optimistic: true
+    mode: TEXT
+    on_value:
+      then:
+        component.update: disp
+  - platform: template
+    id: display_line4
+    name: Display Line 4
+    optimistic: true
+    mode: TEXT
+    on_value:
+      then:
+        component.update: disp
+
